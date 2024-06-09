@@ -1,0 +1,24 @@
+server {
+    listen 80;
+    server_name {{LINK_ID}}.{{APP_DOMAIN}};
+
+    access_log off;
+    error_log  /var/log/nginx/{{APP_DOMAIN_REVERSE}}.error.log error;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    location /api {
+        proxy_set_header app-id "{{APP_ID}}";
+        include conf.d/include/{{APP_DOMAIN_REVERSE}}.proxy.inc;
+        set $ups $scheme://gateway.docker.internal:{{APP_BACKEND_PORT}};
+        proxy_pass $ups;
+    }
+
+    location / {
+        proxy_set_header app-id "{{APP_ID}}";
+        include conf.d/include/{{APP_DOMAIN_REVERSE}}.proxy.inc;
+        set $ups $scheme://gateway.docker.internal:{{APP_FRONTEND_PORT}};
+        proxy_pass $ups;
+    }
+}

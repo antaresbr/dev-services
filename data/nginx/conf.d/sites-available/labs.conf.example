@@ -1,0 +1,16 @@
+server {
+    listen 80;
+    server_name {{LABS_URL}};
+
+    access_log off;
+    error_log  /var/log/nginx/{{LABS_DOMAIN_REVERSE}}.error.log error;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    location / {
+        include conf.d/include/{{LABS_DOMAIN_REVERSE}}.proxy.inc;
+        set $ups $scheme://gateway.docker.internal:{{UPS_PORT}};
+        proxy_pass $ups;
+    }
+}

@@ -1,0 +1,17 @@
+services:
+
+    myadmin:
+        image: 'phpmyadmin'
+        container_name: ${SAIL_SERVICE_MYADMIN}
+        extra_hosts:
+            - host.docker.internal:host-gateway
+            - gateway.docker.internal:host-gateway
+        ports:
+            - '${MYADMIN_FORWARD_PORT}:80'
+        environment:
+            PMA_ARBITRARY: 1
+            PMA_ABSOLUTE_URI: "${MYADMIN_ABSOLUTE_URI}"
+        volumes:
+            - ../../data/myadmin/config.inc.php:/var/www/html/config.inc.php
+        networks:
+            - sail-services
