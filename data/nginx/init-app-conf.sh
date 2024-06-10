@@ -58,8 +58,8 @@ do
     "--domain" | "--app-id" | "--link-id" | "--backend-port" | "--frontend-port")
       zp="$1"
       shift 1
-      [ -z "$1" ] && wsError "ERRO: Parâmetro: ${zp}, valor não informado"
-      [ "${1:0:2}" == "--" ] && wsError "ERRO: Parâmetro: ${zp}, valor invalido: '$1'"
+      [ -z "$1" ] && wsError "Parameter: ${zp}, value not supplied"
+      [ "${1:0:2}" == "--" ] && wsError "Parameter: ${zp}, invalid value: '$1'"
       case "$zp" in
         "--domain")
           pDomain="$1"
