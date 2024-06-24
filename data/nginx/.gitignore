@@ -2,4 +2,5 @@
 !.gitignore
 !conf.d
 !init-app-conf.sh
+!nginx-restart.sh
 !site-config.sh
