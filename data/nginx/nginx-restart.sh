@@ -8,5 +8,4 @@ do
   SAIL_DIR="$(dirname "$(dirname "${SAIL_DIR}")")/sail"
 done
 
-"${SAIL_DIR}/sail" exec nginx "nginx -t && nginx -s reload"
-
+"${SAIL_DIR}/sail" exec nginx nginx -t && "${SAIL_DIR}/sail" exec nginx nginx -s reload
