@@ -116,6 +116,7 @@ setTemplateFileVars
 
 wsTemplateFile "data/nginx/conf.d/include/${LABS_DOMAIN_REVERSE}.proxy.inc" "proxy.inc.example"
 wsTemplateFile "data/nginx/conf.d/include/${SERVICES_DOMAIN_REVERSE}.proxy.inc" "proxy.inc.example"
+wsTemplateFile "data/nginx/conf.d/include/${APP_DOMAIN_REVERSE}.proxy.inc" "proxy.inc.example"
 
 data/nginx/site-config.sh new \
   --template "labs.conf.example" \

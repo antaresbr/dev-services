@@ -89,8 +89,6 @@ do
   [ $# -gt 0 ] && shift 1
 done
 
-case
-
 [ -n "${pDomain}" ] || wsError "Parameter not supplied: --domain"
 [ -n "${pAppId}" ] || wsError "Parameter not supplied: --app-id"
 [ -n "${pBackendPort}" ] || wsError "Parameter not supplied: --backend-port"
