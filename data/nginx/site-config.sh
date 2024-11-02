@@ -1,39 +1,11 @@
 #!/bin/bash
 
 START_DIR="$(pwd)"
-NGINX_DIR="$(dirname "$(realpath "$0")")"
-NGINX_CONFIG_DIR="${NGINX_DIR}/conf.d"
-NGINX_SITES_AVAILABLE="sites-available"
-NGINX_SITES_ENABLED="sites-enabled"
+SCRIPT_BIN="$(basename "$0")"
+SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-if [ -z "${WORKSPACE_LIB_DIR}" ]
-then
-  WORKSPACE_LIB_DIR="${NGINX_DIR}"
-  while [ -n "${WORKSPACE_LIB_DIR}" ]
-  do
-    if [ -d "${WORKSPACE_LIB_DIR}/.workspace-lib" ]
-    then
-      WORKSPACE_LIB_DIR="${WORKSPACE_LIB_DIR}/.workspace-lib"
-      break
-    fi
-    if [ "${WORKSPACE_LIB_DIR}" == "/" ] || [ "${WORKSPACE_LIB_DIR}" == "." ]
-    then
-      WORKSPACE_LIB_DIR=""
-      break
-    fi
-    WORKSPACE_LIB_DIR="$(dirname "${WORKSPACE_LIB_DIR}")"
-  done
-fi
-[ -z "${WORKSPACE_LIB_DIR}" ] && echo -e "\nsite-config.sh | ERROR: WORKSPACE_LIB_DIR not supplied\n" && exit 1
-[ ! -f "${WORKSPACE_LIB_DIR}/base.lib.sh" ] && echo -e "\nsite-config.sh | ERROR: File not found, ${WORKSPACE_LIB_DIR}/base.lib.sh\n" && exit 1
-source "${WORKSPACE_LIB_DIR}/base.lib.sh"
-[ $? -ne 0 ] && echo -e "\nsite-config.sh | ERROR: Failed to source file, ${WORKSPACE_LIB_DIR}/base.lib.sh\n" && exit 1
-
-NGINX_SITES_AVAILABLE_DIR="${NGINX_DIR}/conf.d/${NGINX_SITES_AVAILABLE}"
-[ ! -d "${NGINX_SITES_AVAILABLE_DIR}" ] && wsError "Directory not found, ${NGINX_SITES_AVAILABLE_DIR}"
-
-NGINX_SITES_ENABLED_DIR="${NGINX_DIR}/conf.d/${NGINX_SITES_ENABLED}"
-[ ! -d "${NGINX_SITES_ENABLED_DIR}" ] && wsError "Directory not found, ${NGINX_SITES_ENABLED_DIR}"
+source "${SCRIPT_DIR}/nginx.lib.sh"
+[ $? -eq 0 ] || { echo -e "\n${SCRIPT_BIN} | ERRO: Fail importing file, ${SCRIPT_DIR}/nginx.lib.sh\n"; exit 1; }
 
 #-- init parameters
 pAction=""
@@ -127,7 +99,7 @@ function action_new() {
   then
     chmod ${pMode} ${targetFile}
   fi
-  wsActionWarn "Configuration created, ${NGINX_SITES_AVAILABLE}/${pFile}"
+  wsActionInfo "Configuration created, ${NGINX_SITES_AVAILABLE}/${pFile}"
 }
 
 
@@ -145,7 +117,7 @@ function action_enable() {
       wsActionError "Failed to enable configuration, ${pFile}"
     fi
   fi
-  wsActionWarn "Configuration enabled, ${NGINX_SITES_ENABLED}/${pFile}"
+  wsActionInfo "Configuration enabled, ${NGINX_SITES_ENABLED}/${pFile}"
 }
 
 
@@ -161,7 +133,7 @@ function action_disable() {
   else
     wsActionWarn "Configuration not found/enabled, ${NGINX_SITES_ENABLED}/${pFile}" && return
   fi
-  wsActionWarn "Configuration disabled, ${NGINX_SITES_ENABLED}/${pFile}"
+  wsActionInfo "Configuration disabled, ${NGINX_SITES_ENABLED}/${pFile}"
 }
 
 action_${pAction}

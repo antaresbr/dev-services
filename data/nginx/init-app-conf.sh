@@ -3,32 +3,13 @@
 START_DIR="$(pwd)"
 SCRIPT_BIN="$(basename "$0")"
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-NGINX_DIR="$(dirname "${SCRIPT_DIR}")"
 
-if [ -z "${WORKSPACE_LIB_DIR}" ]
-then
-  WORKSPACE_LIB_DIR="${NGINX_DIR}"
-  while [ -n "${WORKSPACE_LIB_DIR}" ]
-  do
-    if [ -d "${WORKSPACE_LIB_DIR}/.workspace-lib" ]
-    then
-      WORKSPACE_LIB_DIR="${WORKSPACE_LIB_DIR}/.workspace-lib"
-      break
-    fi
-    if [ "${WORKSPACE_LIB_DIR}" == "/" ] || [ "${WORKSPACE_LIB_DIR}" == "." ]
-    then
-      WORKSPACE_LIB_DIR=""
-      break
-    fi
-    WORKSPACE_LIB_DIR="$(dirname "${WORKSPACE_LIB_DIR}")"
-  done
-fi
-[ -z "${WORKSPACE_LIB_DIR}" ] && echo -e "\n${SCRIPT_BIN} | ERRO: WORKSPACE_LIB_DIR not supplied\n" && exit 1
-[ ! -f "${WORKSPACE_LIB_DIR}/base.lib.sh" ] && echo -e "\n${SCRIPT_BIN} | ERRO: Arquivo não encontrado, ${WORKSPACE_LIB_DIR}/base.lib.sh\n" && exit 1
-source "${WORKSPACE_LIB_DIR}/base.lib.sh"
-[ $? -ne 0 ] && echo -e "\n${SCRIPT_BIN} | ERRO: Falha ao importar arquivo, ${WORKSPACE_LIB_DIR}/base.lib.sh\n" && exit 1
+source "${SCRIPT_DIR}/nginx.lib.sh"
+[ $? -eq 0 ] || { echo -e "\n${SCRIPT_BIN} | ERRO: Fail importing file, ${SCRIPT_DIR}/nginx.lib.sh\n"; exit 1; }
 
 wsSourceFile "${WORKSPACE_LIB_DIR}/text.lib.sh"
+
+TEMPLATE_BASE="app.conf.example"
 
 #-- init parameters
 pDomain=""
@@ -43,8 +24,8 @@ Use: $(basename $0) options
 options:
 
    --domain         APP domain.
-   --app-id         APP's ID
-   --link-id        APP's link id. Default: same as --app-id
+   --app-id         APP ID
+   --link-id        APP link id. Default: same as --app-id
    --backend-port   APP backend port
    --frontend-port  APP frontend port
    --help           Show this help
@@ -98,8 +79,13 @@ done
 
 domainReverse="$(text_reverse "." "${pDomain}")"
 
+templateDir=""
+[ ! -d "${NGINX_SITES_AVAILABLE_DIR}/.example" ] || templateDir=".example/"
+templateFile="${templateDir}${pLinkId}.${TEMPLATE_BASE}"
+[ -f "${NGINX_SITES_AVAILABLE_DIR}/${templateFile}" ] || templateFile="${templateDir}${TEMPLATE_BASE}"
+
 "${SCRIPT_DIR}/site-config.sh" new \
-  --template "app.conf.example" \
+  --template "${templateFile}" \
   --file "${domainReverse}.${pAppId}.conf" \
   --var LINK_ID="${pLinkId}" \
   --var APP_DOMAIN="${pDomain}" \
