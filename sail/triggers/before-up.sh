@@ -2,7 +2,7 @@
 
 [ -d "${SAIL_DIR}" ] || { echo "$(basename "$0") | SAIL_DIR not found: ${SAIL_DIR}"; exit 1; }
 
-if [ ${SAIL_MYADMIN,,} == "true" ]
+if [ "${SAIL_MYADMIN,,}" == "true" ]
 then
   targetDir="$(dirname "${SAIL_DIR}")/data/myadmin"
   [ -d "${targetDir}" ] || mkdir -p "${targetDir}"
